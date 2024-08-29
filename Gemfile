@@ -19,3 +19,6 @@ gem 'carrierwave', '3.0.7'
 gem 'fog-aws', '3.24.0'
 
 gem 'dotenv-rails', '3.1.2'
+
+gem 'devise', '~> 4.9', '>= 4.9.4'
+gem 'devise_token_auth', '~> 1.2', '>= 1.2.3'
