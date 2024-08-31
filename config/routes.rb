@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       get "status", to: "status#index"
       resources :recipes
       get 'users/check_name', to: "users#check_name"
+      get "users/:name", to: "users#show"
     end
   end
 end
