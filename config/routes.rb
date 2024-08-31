@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'users/check_name'
   namespace :api do
     namespace :v1 do
       mount_devise_token_auth_for 'User', at: 'auth', controllers: {
@@ -6,6 +7,7 @@ Rails.application.routes.draw do
       }
       get "status", to: "status#index"
       resources :recipes
+      get 'users/check_name', to: "users#check_name"
     end
   end
 end

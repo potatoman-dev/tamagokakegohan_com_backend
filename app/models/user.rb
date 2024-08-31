@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 class User < ActiveRecord::Base
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
   include DeviseTokenAuth::Concerns::User
 
   validates :password, presence: true, on: :create
+  validates :name, presence: true, format: { with: /\A[a-z0-9_-]+\z/ }, uniqueness: true
 
   mount_uploader :avatar, AvatarUploader
 
