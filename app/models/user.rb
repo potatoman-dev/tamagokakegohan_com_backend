@@ -10,4 +10,6 @@ class User < ActiveRecord::Base
   validates :password, presence: true, on: :create
 
   mount_uploader :avatar, AvatarUploader
+
+  has_many :recipes, dependent: :destroy
 end
