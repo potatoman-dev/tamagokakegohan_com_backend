@@ -1,4 +1,4 @@
 class StepSerializer < ActiveModel::Serializer
-  attributes :id, :instruction, :image, :step_number
-  belongs_to :recipe, serializer: RecipeSerializer
+  attributes :id, :step_number, :instruction, :image
+  belongs_to :recipe
 end

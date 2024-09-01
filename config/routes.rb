@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       get "status", to: "status#index"
       resources :recipes, only: %i[index create show update destroy]
       resources :categories, only: %i[index create show update destroy]
+      resources :ingredients, only: %i[index create show update destroy]
       get 'users/check_name', to: "users#check_name"
       get "users/:name", to: "users#show"
     end
