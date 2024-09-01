@@ -7,6 +7,16 @@ class Api::V1::RecipesController < ApplicationController
     render json: recipes, status: :ok
   end
 
+  def show
+    recipe = Recipe.find_by(id: params[:id])
+
+    if recipe
+      render json: recipe, status: :ok
+    else
+      render json: { error: "Recipe not found" }, status: :not_found
+    end
+  end
+
   def create
     @recipe = @user.recipes.build(recipe_params)
     if @recipe.save
@@ -17,6 +27,13 @@ class Api::V1::RecipesController < ApplicationController
   end
 
   def update
+    @recipe = @user.recipes.find(params[:id])
+
+    if @recipe.update(recipe_params)
+      render json: @recipe, status: :ok
+    else
+      render json: @recipe.errors, status: :unprocessable_entity
+    end
   end
 
   def delete
@@ -28,6 +45,6 @@ class Api::V1::RecipesController < ApplicationController
   end
 
   def recipe_params
-    params.require(:recipe).permit(:title, :body, :cooking_time, :image, :status)
+    params.require(:recipe).permit(:title, :body, :cooking_time, :image, :status, steps_attributes: [:id, :step_number, :instruction, :image, :_destroy])
   end
 end

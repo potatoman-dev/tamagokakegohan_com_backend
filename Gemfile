@@ -22,3 +22,5 @@ gem 'dotenv-rails', '3.1.2'
 
 gem 'devise', '~> 4.9', '>= 4.9.4'
 gem 'devise_token_auth', '~> 1.2', '>= 1.2.3'
+
+gem 'active_model_serializers', '~> 0.10.14'

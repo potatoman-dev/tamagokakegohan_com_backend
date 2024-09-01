@@ -7,4 +7,7 @@ class Recipe < ApplicationRecord
   enum status: { draft: 0, published: 1 }
 
   mount_uploader :image, RecipeImageUploader
+
+  has_many :steps, dependent: :destroy
+  accepts_nested_attributes_for :steps, allow_destroy: true
 end
