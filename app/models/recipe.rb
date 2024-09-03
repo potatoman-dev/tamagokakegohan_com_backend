@@ -8,7 +8,6 @@ class Recipe < ApplicationRecord
   has_many :recipe_ingredients, dependent: :destroy
   accepts_nested_attributes_for :recipe_ingredients, allow_destroy: true
 
-  validates :title, presence: true
   validates :title, length: { maximum: 100 }
   validates :cooking_time, numericality: { only_integer: true }
   validates :status, presence: true
