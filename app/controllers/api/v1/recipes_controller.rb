@@ -11,7 +11,7 @@ class Api::V1::RecipesController < ApplicationController
     recipe = Recipe.find_by(id: params[:id])
 
     if recipe
-      render json: recipe, status: :ok
+      render json: recipe, serializer: RecipeSerializer,status: :ok
     else
       render json: { error: "Recipe not found" }, status: :not_found
     end
@@ -20,7 +20,7 @@ class Api::V1::RecipesController < ApplicationController
   def create
     @recipe = @user.recipes.build(recipe_params)
     if @recipe.save
-      render json: @recipe, status: :created
+      render json: @recipe, serializer: RecipeSerializer, status: :created
     else
       render json: { errors: @recipe.errors.full_messages }, status: :unprocessable_entity
     end
@@ -30,7 +30,7 @@ class Api::V1::RecipesController < ApplicationController
     @recipe = @user.recipes.find(params[:id])
 
     if @recipe.update(recipe_params)
-      render json: @recipe, status: :ok
+      render json: @recipe, serializer: RecipeSerializer,  status: :ok
     else
       render json: @recipe.errors, status: :unprocessable_entity
     end
