@@ -4,7 +4,7 @@ class Api::V1::RecipesController < ApplicationController
 
   def index
     recipes = Recipe.all
-    render json: recipes, status: :ok
+    render json: recipes, each_serializer: RecipeSerializer, status: :ok
   end
 
   def show
