@@ -15,6 +15,7 @@ gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
 gem "rack-cors"
 
 gem 'carrierwave', '3.0.7'
+gem 'mini_magick', '~> 4.5', '>= 4.5.1'
 
 gem 'fog-aws', '3.24.0'
 
