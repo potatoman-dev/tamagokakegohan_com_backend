@@ -3,13 +3,19 @@ class Api::V1::RecipesController < ApplicationController
   before_action :authenticate_api_v1_user!, only: %i[create update delete]
 
   def index
-    recipes = Recipe.all
+    recipes = Recipe.where(status: :published).all
     render json: recipes, each_serializer: RecipeSerializer, status: :ok
   end
 
   def user
     user = User.find_by(name: params[:name])
-    recipes = user.recipes.all
+
+      if user == @user
+        recipes = user.recipes.all
+      else
+        recipes = user.recipes.where(status: :published).all
+      end
+
     if recipes
       render json: recipes, each_serializer: RecipeSerializer, status: :ok
     else
@@ -19,6 +25,11 @@ class Api::V1::RecipesController < ApplicationController
 
   def show
     recipe = Recipe.find_by(id: params[:id])
+    if recipe&.user == @user
+      recipe
+    else
+      recipe = Recipe.find_by(id: params[:id], status: :published)
+    end
 
     if recipe
       render json: recipe, serializer: RecipeSerializer,status: :ok
