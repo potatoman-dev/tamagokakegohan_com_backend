@@ -46,7 +46,13 @@ class Api::V1::RecipesController < ApplicationController
     end
   end
 
-  def delete
+  def destroy
+    @recipe = @user.recipes.find(params[:id])
+    if @recipe.destroy
+      head :no_content
+    else
+      render json: { error: 'Failed to delete recipe' }, status: :unprocessable_entity
+    end
   end
 
   private
