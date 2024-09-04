@@ -7,6 +7,16 @@ class Api::V1::RecipesController < ApplicationController
     render json: recipes, each_serializer: RecipeSerializer, status: :ok
   end
 
+  def user
+    user = User.find_by(name: params[:name])
+    recipes = user.recipes.all
+    if recipes
+      render json: recipes, each_serializer: RecipeSerializer, status: :ok
+    else
+      render json: { error: "Recipe not found" }, status: :not_found
+    end
+  end
+
   def show
     recipe = Recipe.find_by(id: params[:id])
 

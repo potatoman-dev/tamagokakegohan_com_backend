@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       resources :ingredients, only: %i[index create show update destroy]
       get 'users/check_name', to: "users#check_name"
       get "users/:name", to: "users#show"
+      get "users/:name/recipes", to: "recipes#user"
     end
   end
 end
