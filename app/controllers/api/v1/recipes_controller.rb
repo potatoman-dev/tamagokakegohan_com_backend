@@ -39,11 +39,48 @@ class Api::V1::RecipesController < ApplicationController
   end
 
   def create
-    @recipe = @user.recipes.build(recipe_params)
-    if @recipe.save
-      render json: @recipe, serializer: RecipeSerializer, status: :created
-    else
-      render json: { errors: @recipe.errors.full_messages }, status: :unprocessable_entity
+    Recipe.transaction do
+      @recipe = @user.recipes.build(
+        title: recipe_params[:title],
+        body:recipe_params[:body],
+        cooking_time: recipe_params[:cooking_time],
+        image: recipe_params[:image],
+        status: recipe_params[:status]
+      )
+
+      if @recipe.save
+        # steps
+        steps_attributes = recipe_params[:steps].to_h.values.map { |step|
+          {
+            recipe_id: @recipe.id,
+            step_number: step[:step_number],
+            instruction: step[:instruction],
+            image: step[:image]
+          }
+        }
+        steps = Step.create!(steps_attributes)
+        @recipe.steps = steps
+
+        # ingredients
+        ingredients_attributes = recipe_params[:ingredients].to_h.values.map { |ingredient_param|
+          ingredient = Ingredient.find_or_create_by(name: ingredient_param[:name])
+
+          {
+            recipe_id: @recipe.id,
+            ingredient_id: ingredient.id,
+            amount: ingredient_param[:amount]
+          }
+        }
+
+        ingredients = RecipeIngredient.create!(ingredients_attributes)
+        @recipe.recipe_ingredients = ingredients
+
+        render json: @recipe, serializer: RecipeSerializer, status: :created
+      else
+        render json: { errors: @recipe.errors.full_messages }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { errors: e.record.errors }, status: :unprocessable_entity
     end
   end
 
@@ -78,8 +115,8 @@ class Api::V1::RecipesController < ApplicationController
         :cooking_time,
         :image,
         :status,
-        steps_attributes: [:id, :step_number, :instruction, :image, :_destroy],
-        recipe_ingredients_attributes: [:id, :ingredient_id, :amount, :_destroy]
+        steps: [:step_number, :instruction, :image],
+        ingredients: [:name, :amount]
       )
   end
 end
