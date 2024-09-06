@@ -40,13 +40,7 @@ class Api::V1::RecipesController < ApplicationController
 
   def create
     Recipe.transaction do
-      @recipe = @user.recipes.build(
-        title: recipe_params[:title],
-        body:recipe_params[:body],
-        cooking_time: recipe_params[:cooking_time],
-        image: recipe_params[:image],
-        status: recipe_params[:status]
-      )
+      @recipe = @user.recipes.build(basic_recipe_params)
 
       if @recipe.save
         # steps
@@ -87,10 +81,60 @@ class Api::V1::RecipesController < ApplicationController
   def update
     @recipe = @user.recipes.find(params[:id])
 
-    if @recipe.update(recipe_params)
-      render json: @recipe, serializer: RecipeSerializer,  status: :ok
-    else
-      render json: @recipe.errors, status: :unprocessable_entity
+    Recipe.transaction do
+      if @recipe.update(basic_recipe_params)
+        # steps
+        Step.transaction do
+
+          @recipe.steps.destroy_all
+
+          steps_attributes = recipe_params[:steps].to_h.values.map { |step|
+            {
+              recipe_id: @recipe.id,
+              step_number: step[:step_number],
+              instruction: step[:instruction],
+              image: step[:image]
+            }
+            # Step.find_or_create_by(recipe_id: @recipe.id,
+            # step_number: step[:step_number],
+            # instruction: step[:instruction],
+            # image: step[:image])
+          }
+          steps = Step.create!(steps_attributes)
+          @recipe.steps = steps
+        end
+
+        # ingredients
+        RecipeIngredient.transaction do
+
+          @recipe.recipe_ingredients.destroy_all
+
+          ingredients_attributes = recipe_params[:ingredients].to_h.values.map { |ingredient_param|
+            ingredient = Ingredient.find_or_create_by(name: ingredient_param[:name])
+
+            {
+              recipe_id: @recipe.id,
+              ingredient_id: ingredient.id,
+              amount: ingredient_param[:amount]
+            }
+
+            # existedRecipeIngredient = RecipeIngredient.find_by(
+            #   recipe_id: @recipe.id,
+            #   ingredient_id: ingredient.id,
+            #   amount: ingredient_param[:amount]
+            # )
+          }
+
+          ingredients = RecipeIngredient.create!(ingredients_attributes)
+          @recipe.recipe_ingredients = ingredients
+        end
+
+        render json: @recipe, serializer: RecipeSerializer,  status: :ok
+      else
+        render json: @recipe.errors, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { errors: e.record.errors }, status: :unprocessable_entity
     end
   end
 
@@ -106,6 +150,16 @@ class Api::V1::RecipesController < ApplicationController
   private
   def set_user
     @user = current_api_v1_user
+  end
+
+  def basic_recipe_params
+    params.require(:recipe).permit(
+        :title,
+        :body,
+        :cooking_time,
+        :image,
+        :status
+      )
   end
 
   def recipe_params
