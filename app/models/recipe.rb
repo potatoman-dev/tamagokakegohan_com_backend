@@ -6,6 +6,8 @@ class Recipe < ApplicationRecord
   has_many :recipe_ingredients, dependent: :destroy
   has_many :ingredients, through: :recipe_ingredients
 
+  has_many :bookmarks, dependent: :destroy
+
   validates :title, length: { maximum: 100 }
   validates :title, presence: true, if: :published?
   validates :cooking_time, numericality: { only_integer: true }

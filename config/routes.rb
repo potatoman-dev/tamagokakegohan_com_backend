@@ -10,6 +10,10 @@ Rails.application.routes.draw do
       get 'users/check_name', to: "users#check_name"
       get "users/:name", to: "users#show"
       get "users/:name/recipes", to: "recipes#user"
+      get "users/:name/bookmarks", to: "bookmarks#index"
+      post "recipes/:id/bookmark", to: "bookmarks#create"
+      delete "recipes/:id/bookmark", to: "bookmarks#destroy"
+      get "recipes/:id/is_user_bookmarked", to: "recipes#is_user_bookmarked"
     end
   end
 end

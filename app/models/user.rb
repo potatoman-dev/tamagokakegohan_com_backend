@@ -10,4 +10,5 @@ class User < ActiveRecord::Base
   mount_uploader :avatar, AvatarUploader
 
   has_many :recipes, dependent: :destroy
+  has_many :bookmarks, dependent: :destroy
 end
