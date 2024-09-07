@@ -7,6 +7,7 @@ class Recipe < ApplicationRecord
   has_many :ingredients, through: :recipe_ingredients
 
   validates :title, length: { maximum: 100 }
+  validates :title, presence: true, if: :published?
   validates :cooking_time, numericality: { only_integer: true }
   validates :status, presence: true
   enum status: { draft: 0, published: 1 }
