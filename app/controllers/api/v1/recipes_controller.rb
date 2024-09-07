@@ -56,12 +56,13 @@ class Api::V1::RecipesController < ApplicationController
         @recipe.steps = steps
 
         # ingredients
-        ingredients_attributes = recipe_params[:ingredients].to_h.values.map { |ingredient_param|
+        ingredients_attributes = recipe_params[:ingredients].to_h.values.map.with_index { |ingredient_param, index|
           ingredient = Ingredient.find_or_create_by(name: ingredient_param[:name])
 
           {
             recipe_id: @recipe.id,
             ingredient_id: ingredient.id,
+            ingredient_number: index + 1,
             amount: ingredient_param[:amount]
           }
         }
@@ -84,10 +85,7 @@ class Api::V1::RecipesController < ApplicationController
     Recipe.transaction do
       if @recipe.update(basic_recipe_params)
         # steps
-        Step.transaction do
-
-          @recipe.steps.destroy_all
-
+          existing_steps = @recipe.steps.to_a
           steps_attributes = recipe_params[:steps].to_h.values.map { |step|
             {
               recipe_id: @recipe.id,
@@ -95,39 +93,87 @@ class Api::V1::RecipesController < ApplicationController
               instruction: step[:instruction],
               image: step[:image]
             }
-            # Step.find_or_create_by(recipe_id: @recipe.id,
-            # step_number: step[:step_number],
-            # instruction: step[:instruction],
-            # image: step[:image])
           }
-          steps = Step.create!(steps_attributes)
-          @recipe.steps = steps
-        end
+
+          # 存在しているかどうか
+          new_step_numbers = steps_attributes.map { |attr|
+            attr[:step_number]
+          }
+          # 不要なステップを削除
+          existing_steps.each do |existing_step|
+            unless new_step_numbers.include?(existing_step.step_number.to_s)
+              existing_step.destroy!
+            end
+          end
+
+          steps_attributes.each do |attr|
+            # 存在している場合
+            existing_step = existing_steps.find{ |step|
+              step.step_number.to_s == attr[:step_number]
+            }
+
+            # 更新
+            if existing_step
+              existing_step.update!(
+                instruction: attr[:instruction],
+                image: attr[:image]
+                )
+              else
+                # 追加
+              @recipe.steps.create!(
+                step_number: attr[:step_number],
+                instruction: attr[:instruction],
+                image: attr[:image]
+              )
+            end
+          end
 
         # ingredients
-        RecipeIngredient.transaction do
+          existing_ingredients = @recipe.recipe_ingredients.to_a
 
-          @recipe.recipe_ingredients.destroy_all
-
-          ingredients_attributes = recipe_params[:ingredients].to_h.values.map { |ingredient_param|
-            ingredient = Ingredient.find_or_create_by(name: ingredient_param[:name])
+          ingredients_attributes = recipe_params[:ingredients].to_h.values.map.with_index { |recipe_ingredient, index|
+          ingredient = Ingredient.find_or_create_by(name: recipe_ingredient[:name])
 
             {
               recipe_id: @recipe.id,
               ingredient_id: ingredient.id,
-              amount: ingredient_param[:amount]
+              ingredient_number: index + 1,
+              amount: recipe_ingredient[:amount]
             }
-
-            # existedRecipeIngredient = RecipeIngredient.find_by(
-            #   recipe_id: @recipe.id,
-            #   ingredient_id: ingredient.id,
-            #   amount: ingredient_param[:amount]
-            # )
           }
 
-          ingredients = RecipeIngredient.create!(ingredients_attributes)
-          @recipe.recipe_ingredients = ingredients
-        end
+          # 存在しているかどうか
+          new_ingredient_numbers = ingredients_attributes.map.with_index { |attr, index|
+            index + 1
+          }
+          # 不要なrecipe_ingredientを削除
+          existing_ingredients.each do |existing_ingredient|
+            unless new_ingredient_numbers.include?(existing_ingredient.ingredient_number)
+              existing_ingredient.destroy!
+            end
+          end
+
+          ingredients_attributes.each_with_index do |attr, index|
+            # 存在している場合
+            existing_ingredient = existing_ingredients.find{ |ingredient|
+              ingredient.ingredient_number == index + 1
+            }
+
+            # 更新
+            if existing_ingredient
+              existing_ingredient.update!(
+                ingredient_id: attr[:ingredient_id],
+              amount: attr[:amount]
+              )
+            else
+                # 追加
+              @recipe.steps.create!(
+                ingredient_id: attr[:ingredient_id],
+                ingredient_number: index + 1,
+                amount: attr[:amount]
+              )
+            end
+          end
 
         render json: @recipe, serializer: RecipeSerializer,  status: :ok
       else
