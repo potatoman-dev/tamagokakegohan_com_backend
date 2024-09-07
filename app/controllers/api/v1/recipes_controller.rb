@@ -44,10 +44,10 @@ class Api::V1::RecipesController < ApplicationController
 
       if @recipe.save
         # steps
-        steps_attributes = recipe_params[:steps].to_h.values.map { |step|
+        steps_attributes = recipe_params[:steps].to_h.values.map.with_index { |step, index|
           {
             recipe_id: @recipe.id,
-            step_number: step[:step_number],
+            step_number: index + 1,
             instruction: step[:instruction],
             image: step[:image]
           }
@@ -86,10 +86,10 @@ class Api::V1::RecipesController < ApplicationController
       if @recipe.update(basic_recipe_params)
         # steps
           existing_steps = @recipe.steps.to_a
-          steps_attributes = recipe_params[:steps].to_h.values.map { |step|
+          steps_attributes = recipe_params[:steps].to_h.values.map.with_index { |step, index|
             {
               recipe_id: @recipe.id,
-              step_number: step[:step_number],
+              step_number: index + 1,
               instruction: step[:instruction],
               image: step[:image]
             }
@@ -167,7 +167,7 @@ class Api::V1::RecipesController < ApplicationController
               )
             else
                 # 追加
-              @recipe.steps.create!(
+              @recipe.recipe_ingredients.create!(
                 ingredient_id: attr[:ingredient_id],
                 ingredient_number: index + 1,
                 amount: attr[:amount]
