@@ -44,10 +44,10 @@ class Api::V1::RecipesController < ApplicationController
 
       if @recipe.save
         # steps
-        steps_attributes = recipe_params[:steps].to_h.values.map { |step|
+        steps_attributes = recipe_params[:steps].to_h.values.map.with_index { |step, index|
           {
             recipe_id: @recipe.id,
-            step_number: step[:step_number],
+            step_number: index + 1,
             instruction: step[:instruction],
             image: step[:image]
           }
@@ -85,25 +85,25 @@ class Api::V1::RecipesController < ApplicationController
     ActiveRecord::Base.transaction do
       if @recipe.update(basic_recipe_params)
         # steps
-          steps_attributes = recipe_params[:steps].to_h.values.map { |step|
+        steps_attributes = recipe_params[:steps].to_h.values.map.with_index { |step, index|
             {
               recipe_id: @recipe.id,
-              step_number: step[:step_number],
+            step_number: index + 1,
               instruction: step[:instruction],
               image: step[:image]
             }
           }
 
           # 存在しているかどうか
-          new_step_numbers = steps_attributes.map { |attr|
-            attr[:step_number].to_i
+        new_step_numbers = steps_attributes.map.with_index { |attr, index|
+          index + 1
           }
           # 不要なステップを削除
           @recipe.steps.where.not(step_number: new_step_numbers).destroy_all
 
-          steps_attributes.each do |attr|
+        steps_attributes.each_with_index do |attr, index|
             # 存在している場合
-            existing_step = @recipe.steps.find_by(step_number: attr[:step_number])
+          existing_step = @recipe.steps.find_by(step_number: index + 1)
 
             if existing_step
               # 更新
@@ -114,7 +114,7 @@ class Api::V1::RecipesController < ApplicationController
             else
               # 追加
               @recipe.steps.create!(
-                step_number: attr[:step_number],
+              step_number: index + 1,
                 instruction: attr[:instruction],
                 image: attr[:image]
               )
