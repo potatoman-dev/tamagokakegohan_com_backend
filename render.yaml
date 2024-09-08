@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: my-rails-app
+    name: tamagokakegohan_com_backend
     env: production
     buildCommand: bundle install && bin/rails db:migrate
     startCommand: bundle exec rails s
