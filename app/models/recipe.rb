@@ -15,4 +15,16 @@ class Recipe < ApplicationRecord
   enum status: { draft: 0, published: 1 }
 
   mount_uploader :image, RecipeImageUploader
+
+  scope :highlight_recipes, -> (day){
+    joins(:bookmarks)
+    .where('bookmarks.created_at >= ?', day.week.ago)
+    .group('recipes.id')
+    .order('COUNT(bookmarks.id) DESC')
+  }
+
+  scope :new_recipes, -> (day){
+    where("created_at > ?", day.days.ago)
+    .order(created_at: :desc)
+  }
 end

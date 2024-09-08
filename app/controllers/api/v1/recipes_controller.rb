@@ -3,7 +3,14 @@ class Api::V1::RecipesController < ApplicationController
   before_action :authenticate_api_v1_user!, only: %i[create update delete]
 
   def index
-    recipes = Recipe.where(status: :published).all
+    case params[:filter]
+    when 'new'
+      recipes = Recipe.new_recipes(7).limit(30)
+    when 'highlight'
+      recipes = Recipe.highlight_recipes(7).limit(30)
+    else
+      recipes = Recipe.where(status: :published).all
+    end
     render json: recipes, each_serializer: RecipeSerializer, status: :ok
   end
 
