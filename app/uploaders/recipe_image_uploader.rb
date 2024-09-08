@@ -1,7 +1,7 @@
 class RecipeImageUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
-  # include CarrierWave::MiniMagick
+  include CarrierWave::MiniMagick
 
   # Choose what kind of storage to use for this uploader:
   storage :file
@@ -21,6 +21,8 @@ class RecipeImageUploader < CarrierWave::Uploader::Base
   #   "/images/fallback/" + [version_name, "default.png"].compact.join('_')
   # end
 
+  process resize_to_fit: [1000, 667]
+
   # Process files as they are uploaded:
   # process scale: [200, 300]
   #
@@ -36,7 +38,7 @@ class RecipeImageUploader < CarrierWave::Uploader::Base
   # Add an allowlist of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   def extension_allowlist
-    %w(jpg jpeg png)
+    %w(jpg jpeg png webp)
   end
 
   # Override the filename of the uploaded files:
@@ -44,4 +46,19 @@ class RecipeImageUploader < CarrierWave::Uploader::Base
   # def filename
   #   "something.jpg"
   # end
+
+    # convert image to webp
+    process :convert_to_webp
+
+    def convert_to_webp
+      manipulate! do |img|
+        img.format 'webp'
+        img
+      end
+    end
+
+    # update filename extension
+    def filename
+      super.chomp(File.extname(super)) + '.webp' if original_filename.present?
+    end
 end
