@@ -24,5 +24,6 @@ module App
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     config.time_zone = 'Tokyo'
+    config.hosts << "tamagokakegohan-com-backend.onrender.com"
   end
 end
