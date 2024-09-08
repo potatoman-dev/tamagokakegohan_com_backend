@@ -1,5 +1,5 @@
 class Api::V1::IngredientsController < ApplicationController
-  before_action :authenticate_api_v1_user!, only: %i[create update delete]
+  before_action :authenticate_api_v1_user!, only: %i[create update destroy]
 
   def index
     ingredients = Ingredient.all

@@ -1,6 +1,6 @@
 class Api::V1::BookmarksController < ApplicationController
   before_action :set_user
-  before_action :authenticate_api_v1_user!, only: %i[create update delete]
+  before_action :authenticate_api_v1_user!, only: %i[create update destroy]
 
   def index
     bookmarks = @user.bookmarks.all
