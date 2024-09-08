@@ -31,3 +31,5 @@
 .env
 
 /public/uploads/*
+
+.http

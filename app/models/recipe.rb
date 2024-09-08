@@ -1,0 +1,30 @@
+class Recipe < ApplicationRecord
+  belongs_to :user
+
+  has_many :steps, dependent: :destroy
+
+  has_many :recipe_ingredients, dependent: :destroy
+  has_many :ingredients, through: :recipe_ingredients
+
+  has_many :bookmarks, dependent: :destroy
+
+  validates :title, length: { maximum: 100 }
+  validates :title, presence: true, if: :published?
+  validates :cooking_time, numericality: { only_integer: true }
+  validates :status, presence: true
+  enum status: { draft: 0, published: 1 }
+
+  mount_uploader :image, RecipeImageUploader
+
+  scope :highlight_recipes, -> (day){
+    joins(:bookmarks)
+    .where('bookmarks.created_at >= ?', day.week.ago)
+    .group('recipes.id')
+    .order('COUNT(bookmarks.id) DESC')
+  }
+
+  scope :new_recipes, -> (day){
+    where("created_at > ?", day.days.ago)
+    .order(created_at: :desc)
+  }
+end
