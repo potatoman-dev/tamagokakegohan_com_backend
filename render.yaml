@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: my-rails-app
+    env: production
+    buildCommand: bundle install && bin/rails db:migrate
+    startCommand: bundle exec rails s
