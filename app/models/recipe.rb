@@ -19,12 +19,14 @@ class Recipe < ApplicationRecord
   scope :highlight_recipes, -> (day){
     joins(:bookmarks)
     .where('bookmarks.created_at >= ?', day.week.ago)
+    .where(status: :published)
     .group('recipes.id')
     .order('COUNT(bookmarks.id) DESC')
   }
 
   scope :new_recipes, -> (day){
     where("created_at > ?", day.days.ago)
+    .where(status: :published)
     .order(created_at: :desc)
   }
 end
