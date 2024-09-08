@@ -1,6 +1,7 @@
 services:
   - type: web
     name: tamagokakegohan_com_backend
-    env: production
+    envVars:
+      RAILS_ENV: production
     buildCommand: bundle install && bin/rails db:migrate
     startCommand: bundle exec rails s
