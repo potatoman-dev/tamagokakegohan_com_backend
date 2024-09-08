@@ -11,6 +11,7 @@ class User < ActiveRecord::Base
 
   has_many :recipes, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
+  has_many :bookmarked_recipes, through: :bookmarks, source: :recipe
 
   #フォローしている
   has_many :relationships, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
