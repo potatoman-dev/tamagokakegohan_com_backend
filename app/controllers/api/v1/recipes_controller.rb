@@ -8,6 +8,10 @@ class Api::V1::RecipesController < ApplicationController
       recipes = Recipe.new_recipes(7).limit(30)
     when 'highlight'
       recipes = Recipe.highlight_recipes(7).limit(30)
+    when 'following'
+      followings = @user.followings
+      following_ids = @user.followings.pluck(:id)
+      recipes = Recipe.where(user_id: following_ids, status: :published).order(created_at: :desc).limit(30)
     else
       recipes = Recipe.where(status: :published).all
     end
