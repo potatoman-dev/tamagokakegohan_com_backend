@@ -29,4 +29,10 @@ class Recipe < ApplicationRecord
     .where(status: :published)
     .order(created_at: :desc)
   }
+
+  scope :fast_recipes, -> (sec){
+    where("cooking_time < ?", sec)
+    .where(status: :published)
+    .order(created_at: :desc)
+  }
 end
