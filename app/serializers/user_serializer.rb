@@ -1,5 +1,5 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :name, :nickname, :avatar, :rank, :following_count, :follower_count
+  attributes :name, :nickname, :avatar, :introduction, :rank, :following_count, :follower_count
 
   def rank
     "かけだし"

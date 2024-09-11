@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
 
   validates :password, presence: true, on: :create
   validates :name, presence: true, format: { with: /\A[a-z0-9_-]+\z/ }, uniqueness: true
+  validates :introduction, length: { maximum: 200 }
 
   mount_uploader :avatar, AvatarUploader
 
