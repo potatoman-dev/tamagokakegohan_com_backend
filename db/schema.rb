@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_08_074215) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_11_145622) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,6 +28,15 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_08_074215) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_ingredients_on_name", unique: true
+  end
+
+  create_table "likes", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "recipe_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_likes_on_recipe_id"
+    t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
   create_table "recipe_ingredients", force: :cascade do |t|
@@ -90,6 +99,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_08_074215) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "avatar"
+    t.text "introduction"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["name"], name: "index_users_on_name", unique: true
@@ -99,6 +109,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_08_074215) do
 
   add_foreign_key "bookmarks", "recipes"
   add_foreign_key "bookmarks", "users"
+  add_foreign_key "likes", "recipes"
+  add_foreign_key "likes", "users"
   add_foreign_key "recipe_ingredients", "ingredients"
   add_foreign_key "recipe_ingredients", "recipes"
   add_foreign_key "recipes", "users"

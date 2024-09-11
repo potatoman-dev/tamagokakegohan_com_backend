@@ -3,8 +3,8 @@ class Api::V1::BookmarksController < ApplicationController
   before_action :authenticate_api_v1_user!, only: %i[create update destroy]
 
   def index
-    bookmarks = @user.bookmarks.all
-    render json: bookmarks, status: :ok
+    bookmarks = @user.bookmarked_recipes
+    render json: bookmarks, each_serializer: RecipeSerializer, status: :ok
   end
 
   def create

@@ -5,6 +5,6 @@ class Api::V1::Auth::RegistrationsController < DeviseTokenAuth::RegistrationsCon
   end
 
   def account_update_params
-    params.permit(:email, :password, :password_confirmation, :name, :nickname, :avatar)
+    params.permit(:email, :password, :password_confirmation, :name, :nickname, :avatar, :introduction)
   end
 end

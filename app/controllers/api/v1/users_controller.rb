@@ -3,7 +3,7 @@ class Api::V1::UsersController < ApplicationController
     user = User.find_by(name: params[:name])
 
     if user
-      render json: { name: user.name, avatar: user.avatar, nickname: user.nickname, rank: "かけだし" }, status: :ok
+      render json: user, serializer: UserSerializer, status: :ok
     else
       render json: { error: "User not found" }, status: :not_found
     end

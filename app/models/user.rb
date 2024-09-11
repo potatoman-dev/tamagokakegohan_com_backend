@@ -6,11 +6,15 @@ class User < ActiveRecord::Base
 
   validates :password, presence: true, on: :create
   validates :name, presence: true, format: { with: /\A[a-z0-9_-]+\z/ }, uniqueness: true
+  validates :introduction, length: { maximum: 200 }
 
   mount_uploader :avatar, AvatarUploader
 
   has_many :recipes, dependent: :destroy
   has_many :bookmarks, dependent: :destroy
+  has_many :bookmarked_recipes, through: :bookmarks, source: :recipe
+  has_many :likes, dependent: :destroy
+  has_many :liked_recipes,through: :likes, source: :recipe
 
   #フォローしている
   has_many :relationships, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
