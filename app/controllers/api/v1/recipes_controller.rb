@@ -221,6 +221,24 @@ class Api::V1::RecipesController < ApplicationController
     render json: { is_liked: is_liked }
   end
 
+  def search
+    keywords = params[:q].split(/\s+/)
+    puts keywords
+    conditions = keywords.map.with_index do |keyword, index|
+      "(recipes.title LIKE :keyword_#{index} OR recipes.body LIKE :keyword_#{index} OR ingredients.name LIKE :keyword_#{index})"
+    end.join(" AND ")
+
+    search_conditions = keywords.each_with_index.each_with_object({}) do |(keyword, index), hash|
+      hash["keyword_#{index}".to_sym] = "%#{keyword}%"
+    end
+
+    recipes = Recipe.joins(:recipe_ingredients => :ingredient).where(conditions, search_conditions).where(status: :published).distinct
+
+    puts recipes
+
+    render json: recipes, each_serializer: RecipeSerializer, status: :ok
+  end
+
   private
   def set_user
     @user = current_api_v1_user

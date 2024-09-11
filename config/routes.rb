@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       get "status", to: "status#index"
       resources :recipes, only: %i[index create show update destroy] do
         collection do
-          get 'search'
+          get 'search', to: "recipes#search"
         end
       end
       resources :ingredients, only: %i[index create show update destroy]
