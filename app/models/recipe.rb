@@ -36,4 +36,12 @@ class Recipe < ApplicationRecord
     .where(status: :published)
     .order(updated_at: :desc)
   }
+
+  scope :halloffame_recipes, -> (count){
+    joins(:likes)
+    .where(status: :published)
+    .group('recipes.id')
+    .having('COUNT(likes.id) >= ?', count)
+    .order('COUNT(likes.id) DESC')
+  }
 end

@@ -10,6 +10,8 @@ class Api::V1::RecipesController < ApplicationController
       recipes = Recipe.highlight_recipes(7).limit(30)
     when 'fast'
       recipes = Recipe.fast_recipes(60).limit(30)
+    when 'halloffame'
+      recipes = Recipe.halloffame_recipes(50).limit(30)
     when 'following'
       followings = @user.followings
       following_ids = @user.followings.pluck(:id)
