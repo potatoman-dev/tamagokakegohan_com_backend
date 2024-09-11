@@ -7,6 +7,7 @@ class Recipe < ApplicationRecord
   has_many :ingredients, through: :recipe_ingredients
 
   has_many :bookmarks, dependent: :destroy
+  has_many :likes, dependent: :destroy
 
   validates :title, length: { maximum: 100 }
   validates :title, presence: true, if: :published?

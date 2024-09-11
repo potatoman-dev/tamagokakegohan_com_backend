@@ -215,6 +215,12 @@ class Api::V1::RecipesController < ApplicationController
     render json: { is_bookmarked: is_bookmarked }
   end
 
+  def is_user_liked
+    recipe = params[:id]
+    is_liked = @user.likes.exists?(recipe_id: recipe)
+    render json: { is_liked: is_liked }
+  end
+
   private
   def set_user
     @user = current_api_v1_user
