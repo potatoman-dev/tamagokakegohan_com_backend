@@ -5,17 +5,17 @@ class Api::V1::RecipesController < ApplicationController
   def index
     case params[:filter]
     when 'new'
-      recipes = Recipe.new_recipes(7).limit(30)
+      recipes = Recipe.new_recipes(7)
     when 'highlight'
-      recipes = Recipe.highlight_recipes(7).limit(30)
+      recipes = Recipe.highlight_recipes(7)
     when 'fast'
-      recipes = Recipe.fast_recipes(60).limit(30)
+      recipes = Recipe.fast_recipes(60)
     when 'halloffame'
-      recipes = Recipe.halloffame_recipes(50).limit(30)
+      recipes = Recipe.halloffame_recipes(50)
     when 'following'
       followings = @user.followings
       following_ids = @user.followings.pluck(:id)
-      recipes = Recipe.where(user_id: following_ids, status: :published).order(created_at: :desc).limit(30)
+      recipes = Recipe.where(user_id: following_ids, status: :published).order(created_at: :desc)
     else
       recipes = Recipe.where(status: :published).all
     end
