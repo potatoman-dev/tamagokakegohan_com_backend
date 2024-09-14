@@ -2,7 +2,7 @@ class UserSerializer < ActiveModel::Serializer
   attributes :name, :nickname, :avatar, :introduction, :rank, :following_count, :follower_count
 
   def rank
-    "かけだし"
+    object.rank(object.recipes)
   end
 
   def following_count
