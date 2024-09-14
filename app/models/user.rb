@@ -24,4 +24,20 @@ class User < ActiveRecord::Base
   has_many :followings, through: :relationships, source: :followed
   # フォロワーの取得
   has_many :followers, through: :reverse_of_relationships, source: :follower
+
+  def rank(user_recipes)
+    recipes_count = user_recipes.where(status: :published).count
+    case recipes_count
+    when 0...5
+      "かけだし"
+    when 5...10
+      "見習い"
+    when 10...20
+      "1つ星"
+    when 20...30
+      "2つ星"
+    else
+      "3つ星"
+    end
+  end
 end

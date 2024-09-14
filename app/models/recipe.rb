@@ -13,6 +13,7 @@ class Recipe < ApplicationRecord
   validates :title, presence: true, if: :published?
   validates :cooking_time, numericality: { only_integer: true }
   validates :status, presence: true
+  # validates :image, presence: true, on: :update
   enum status: { draft: 0, published: 1 }
 
   mount_uploader :image, RecipeImageUploader
