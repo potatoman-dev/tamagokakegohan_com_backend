@@ -110,13 +110,18 @@ class Api::V1::RecipesController < ApplicationController
         raise ActiveRecord::Rollback
       end
 
-      if @recipe.update(
+      # update_paramsからimageがnullの場合に除外
+      update_params = {
         title: params.require(:recipe)[:title],
         body: params.require(:recipe)[:body],
         cooking_time: params.require(:recipe)[:cooking_time].to_i,
-        image: params.require(:recipe)[:image],
         status: params.require(:recipe)[:status]
-      )
+      }
+      # imageがnullでない場合のみ追加
+      update_params[:image] = params.require(:recipe)[:image] unless params.require(:recipe)[:image].nil?
+
+
+      if @recipe.update(update_params)
         # steps
         steps_attributes = recipe_params[:steps].to_h.values.map.with_index { |step, index|
           {
