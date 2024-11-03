@@ -26,10 +26,10 @@ class Recipe < ApplicationRecord
     .order('COUNT(bookmarks.id) DESC')
   }
 
-  scope :new_recipes, -> (day){
-    where("created_at > ?", day.days.ago)
-    .where(status: :published)
+  scope :new_recipes, -> {
+    where(status: :published)
     .order(created_at: :desc)
+    .limit(8)
   }
 
   scope :fast_recipes, -> (sec){

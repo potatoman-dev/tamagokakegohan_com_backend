@@ -5,7 +5,7 @@ class Api::V1::RecipesController < ApplicationController
   def index
     case params[:filter]
     when 'new'
-      recipes = Recipe.new_recipes(7)
+      recipes = Recipe.new_recipes
     when 'highlight'
       recipes = Recipe.highlight_recipes(7)
     when 'fast'
